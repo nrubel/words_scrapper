@@ -5,13 +5,15 @@ const puppeteer = require('puppeteer');
 
 admin.initializeApp();
 
-exports.getWordResult = functions.region(`us-central1`).https.onCall(async (word, context) => {
+exports.getWordResult = functions.region(`us-central1`).https.onCall(async (data, context) => {
   try{
+    const {word, type} = data
     const words = admin.firestore().collection('words').doc(word)
     const doc = await words.get()
+    let result;
     if(doc.data()) {
       console.log(`result from firestore`)
-      return doc.data()
+      result = doc.data()
     }
     else{
       console.log(`result from wordsapi`, word)
@@ -37,10 +39,15 @@ exports.getWordResult = functions.region(`us-central1`).https.onCall(async (word
       if(when && encrypted) {
         const res = await axios.get(`${baseUrl}/mashape/words/${word}?when=${when}&encrypted=${encrypted}`)
         await words.set(res.data)
-        return res.data
+        result = res.data
       }
 
       await browser.close()
+    }
+
+    return type === 'everything' ? result : {
+      word,
+      [type]: result.results.map(r => r[type]).flat(100).filter(e => e !== null),
     }
   }catch (e) {
     console.error(e.details)
