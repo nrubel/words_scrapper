@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 
 admin.initializeApp();
 
-exports.getWordResult = functions.https.onCall(async (word, context) => {
+exports.getWordResult = functions.region(`us-central1`).https.onCall(async (word, context) => {
   try{
     const doc = await admin.firestore().collection('words').doc(word).get()
     if(doc.data()) {
