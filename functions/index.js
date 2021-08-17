@@ -37,7 +37,9 @@ exports.getWordResult = functions.region(`us-central1`).https.onCall(async (data
           if (i === 3) encrypted = e;
         })
       if(when && encrypted) {
-        const res = await axios.get(`${baseUrl}/mashape/words/${word}?when=${when}&encrypted=${encrypted}`)
+        const url = `${baseUrl}/mashape/words/${word}?when=${when}&encrypted=${encrypted}`
+        console.log(url)
+        const res = await axios.get(url)
         await words.set(res.data)
         result = res.data
       }
