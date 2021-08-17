@@ -9,7 +9,7 @@ form.addEventListener('submit', async e => {
     console.info(`sumitted value:`, form.word.value)
     res.textContent = `loading`
 
-    const functions = firebase.functions()
+    const functions = firebase.app(`us-central1`).functions()
     const addRequest = functions.httpsCallable('getWordResult');
     const result = await addRequest(form.word.value)
     res.textContent = result.data.word ? JSON.stringify(result.data, undefined, 2) : result.data.toString()

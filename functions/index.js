@@ -7,7 +7,8 @@ admin.initializeApp();
 
 exports.getWordResult = functions.region(`us-central1`).https.onCall(async (word, context) => {
   try{
-    const doc = await admin.firestore().collection('words').doc(word).get()
+    const words = admin.firestore().collection('words').doc(word)
+    const doc = await words.get()
     if(doc.data()) {
       console.log(`result from firestore`)
       return doc.data()
@@ -35,7 +36,7 @@ exports.getWordResult = functions.region(`us-central1`).https.onCall(async (word
         })
       if(when && encrypted) {
         const res = await axios.get(`${baseUrl}/mashape/words/${word}?when=${when}&encrypted=${encrypted}`)
-        await admin.firestore().collection('words').doc(word).set(res.data)
+        await words.set(res.data)
         return res.data
       }
 
