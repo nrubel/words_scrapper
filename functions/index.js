@@ -7,7 +7,7 @@ admin.initializeApp();
 
 const runtimeOpts = {
   timeoutSeconds: 300,
-  memory: '1GB'
+  memory: '512MB'
 }
 
 exports.getWordResult = functions.runWith(runtimeOpts).region(`us-central1`).https.onCall(async (data, context) => {
