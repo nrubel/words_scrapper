@@ -1,5 +1,6 @@
 const form = document.querySelector(`#getWord`)
 const res = document.querySelector('.res')
+const submitBtn = document.querySelector(`#getWord [type="submit"]`)
 
 
 // Add a new request
@@ -10,6 +11,7 @@ form.addEventListener('submit', async e => {
   try {
     console.info(`submitted value:`, form.word.value, `and type: `, form.type.value)
     res.textContent = `loading`
+    submitBtn.setAttribute('disabled', 'disabled')
 
     const addRequest = functions.httpsCallable('getWordResult');
     const result = await addRequest({
@@ -27,6 +29,7 @@ form.addEventListener('submit', async e => {
       res.textContent = ''
     }, 3000)
   } finally {
+    submitBtn.removeAttribute('disabled')
     const {when, encrypted, words} = futureQuery || {}
     if(!!futureQuery && !!when && !!encrypted){
       const fQuery = functions.httpsCallable('loopWords')
