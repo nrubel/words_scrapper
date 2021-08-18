@@ -5,7 +5,12 @@ const puppeteer = require('puppeteer');
 
 admin.initializeApp();
 
-exports.getWordResult = functions.region(`us-central1`).https.onCall(async (data, context) => {
+const runtimeOpts = {
+  timeoutSeconds: 300,
+  memory: '1GB'
+}
+
+exports.getWordResult = functions.runWith(runtimeOpts).region(`us-central1`).https.onCall(async (data, context) => {
   try{
     const {word, type} = data
     const words = admin.firestore().collection('words').doc(word)
@@ -49,7 +54,7 @@ exports.getWordResult = functions.region(`us-central1`).https.onCall(async (data
 
     return type === 'everything' ? result : {
       word,
-      [type]: result.results.map(r => r[type]).flat(100).filter(e => e !== null),
+      [type]: result.results.map(r => r[type]).flat(100).filter(e => !!e),
     }
   }catch (e) {
     console.error(e.details)
